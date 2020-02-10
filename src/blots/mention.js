@@ -24,6 +24,28 @@ class MentionBlot extends Embed {
   static value(domNode) {
     return domNode.dataset;
   }
+  
+  update(mutations, context) {
+
+    mutations.forEach(mutation => {
+      if (mutation.type != 'childList') return;
+      if (mutation.removedNodes.length == 0) return;
+
+      setTimeout(() => this._remove(), 0);
+    });
+
+    const unhandledMutations = mutations.filter(m => m.type != 'childList')
+    super.update(unhandledMutations, context);
+  }
+
+  _remove() {
+    const cursorPosition = quill.getSelection().index - 1;
+    
+    this.remove();
+
+    setTimeout(() => quill.setSelection(cursorPosition, Quill.sources.API), 0);
+  }
+  
 }
 
 MentionBlot.blotName = "mention";
